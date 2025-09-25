@@ -270,7 +270,7 @@ if uploaded_file is not None:
         st.markdown(f'<div class="metric-card"><div class="metric-title">Complaint Rate</div><div class="metric-value">{complaint_rate:.1f}%</div></div>', unsafe_allow_html=True)
 
     st.markdown(f"### Complaints Data")
-    st.dataframe(high_prob_df[[uid_col, 'Complaint_Probability']], use_container_width=True)
+    st.dataframe(high_prob_df[[uid_col, 'Complaint_Probability','Scheme', 'Team Name']], use_container_width=True)
 
     csv = high_prob_df.to_csv(index=False).encode()
     st.download_button(label="Download Predictions CSV", data=csv, file_name='complaint_predictions.csv', mime='text/csv')
