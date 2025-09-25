@@ -138,6 +138,20 @@ if uploaded_file is not None:
     else:
         user_df = pd.read_excel(uploaded_file)
 
+
+    # Exclude existing complaints from uploaded data
+    if 'Process Group' in user_df.columns:
+        user_df = user_df[~user_df['Process Group'].str.strip().str.lower().eq('complaint')]
+        user_df = user_df.reset_index(drop=True)
+    else:
+        st.warning("'Process Group' column not found. Predictions may be inaccurate.")
+
+
+
+
+
+
+
     st.markdown("### 📋 Uploaded Data Preview")
     st.dataframe(user_df.head(), use_container_width=True)
 
