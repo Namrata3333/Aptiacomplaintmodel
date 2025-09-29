@@ -274,7 +274,7 @@ if uploaded_file is not None:
     
     # Select original columns plus prediction columns for download
     download_columns = [
-    uid_col,  'Prediction', 'Scheme', 'Team Name','Portfolio', 'Scheme', 'Team Name', 'Current Outsourcing Team', 'Days to Target', 'Scan+2',
+    uid_col,   'Scheme', 'Team Name','Portfolio', 'Scheme', 'Team Name', 'Current Outsourcing Team', 'Days to Target', 'Scan+2',
         'Site', 'Manual/RPA', 'Critical', 'Forthcoming Event', 'No of Days', 'Mercer Days',
     ]
     download_df = high_prob_df[download_columns]
