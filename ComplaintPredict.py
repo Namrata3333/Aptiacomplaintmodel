@@ -270,7 +270,30 @@ if uploaded_file is not None:
         st.markdown(f'<div class="metric-card"><div class="metric-title">Complaint Rate</div><div class="metric-value">{complaint_rate:.1f}%</div></div>', unsafe_allow_html=True)
 
     st.markdown(f"### Complaints Data")
-    st.dataframe(high_prob_df[[uid_col, 'Complaint_Probability','Scheme', 'Team Name']], use_container_width=True)
+    st.dataframe(high_prob_df[[uid_col,'Scheme', 'Team Name', 'Current Outsourcing Team']], use_container_width=True)
+    
+    # Select original columns plus prediction columns for download
+    download_columns = [
+    uid_col,  'Prediction', 'Scheme', 'Team Name','Portfolio', 'Scheme', 'Team Name', 'Current Outsourcing Team', 'Days to Target', 'Scan+2',
+        'Site', 'Manual/RPA', 'Critical', 'Forthcoming Event', 'No of Days', 'Mercer Days',
+    ]
+    download_df = high_prob_df[download_columns]
 
-    csv = high_prob_df.to_csv(index=False).encode()
+   # Create CSV from this clean DataFrame
+    csv = download_df.to_csv(index=False).encode()
+
+    # Provide download button
     st.download_button(label="Download Predictions CSV", data=csv, file_name='complaint_predictions.csv', mime='text/csv')
+
+
+
+
+
+
+
+
+
+
+
+    # csv = high_prob_df.to_csv(index=False).encode()
+    # st.download_button(label="Download Predictions CSV", data=csv, file_name='complaint_predictions.csv', mime='text/csv')
