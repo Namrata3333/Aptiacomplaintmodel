@@ -96,6 +96,7 @@ try:
 except FileNotFoundError:
     aptia_logo = None
 
+# Sidebar UI
 with st.sidebar:
     if aptia_logo:
         st.image(aptia_logo, use_container_width=True)
@@ -109,28 +110,28 @@ with st.sidebar:
     st.write("3. View results.")
     st.write("4. Download predictions.")
 
+# Header and subtitle UI
 col1, col2, col3 = st.columns([0.1,1,0.1])
 with col2:
     st.markdown('<div class="header"><h1 class="header-title">Complaint Prediction Tool</h1></div>', unsafe_allow_html=True)
 st.markdown('<p class="subtitle-text">Empower your team with data-driven insights to predict and prevent customer complaints.</p>', unsafe_allow_html=True)
+
 st.markdown("### 📤 Upload Customer Inquiry Data")
 
 uploaded_file = st.file_uploader("Choose a file", type=['csv', 'xlsx'], label_visibility="collapsed")
 
+
 @st.cache_data
 def load_models():
-    # model = pickle.load(open(r'C:/Users/Sumit/Downloads/AptiaComplaintPredictModel2 -w0lag/Pythoncodes/model.pkl', 'rb'))
-    # le_dict = pickle.load(open(r'C:/Users/Sumit/Downloads/AptiaComplaintPredictModel2 -w0lag/Pythoncodes/le_dict.pkl', 'rb'))
-    # lookup_cum = pd.read_csv(r'C:/Users/Sumit/Downloads/AptiaComplaintPredictModel2 -w0lag/Pythoncodes/nino_lookup_cumulative.csv')
-    # lookup_monthly = pd.read_csv(r'C:/Users/Sumit/Downloads/AptiaComplaintPredictModel2 -w0lag/Pythoncodes/nino_lookup_monthly_freq.csv')
     model = pickle.load(open('model.pkl', 'rb'))
     le_dict = pickle.load(open('le_dict.pkl', 'rb'))
-    lookup_cum = pd.read_csv('nino_lookup_cumulative.csv')
-    lookup_monthly = pd.read_csv('nino_lookup_monthly_freq.csv')
-
+    lookup_cum = pd.read_pickle('nino_lookup_cumulative.pkl')
+    lookup_monthly = pd.read_pickle('nino_lookup_monthly_freq.pkl')
     return model, le_dict, lookup_cum, lookup_monthly
 
+
 model, le_dict, lookup_cum, lookup_monthly = load_models()
+
 
 if uploaded_file is not None:
     if uploaded_file.name.endswith('.csv'):
@@ -146,12 +147,6 @@ if uploaded_file is not None:
     else:
         st.warning("'Process Group' column not found. Predictions may be inaccurate.")
 
-
-
-
-
-
-
     st.markdown("### 📋 Uploaded Data Preview")
     st.dataframe(user_df.head(), use_container_width=True)
 
@@ -165,6 +160,7 @@ if uploaded_file is not None:
         user_df[col] = 0
     user_df['Monthly_Query_Count_Past'] = 0
 
+    # Merge lookups from .pkl-loaded DataFrames
     user_df = user_df.merge(lookup_cum, how='left', on=uid_col, suffixes=('', '_lookup'))
     for col in ['Past_Case_Count', 'Past_Complaints_Cum', 'Complaint_Ratio',
                 'Complaint_30d_Rolling', 'Vulnerable_CumCount']:
@@ -272,28 +268,12 @@ if uploaded_file is not None:
     st.markdown(f"### Complaints Data")
     st.dataframe(high_prob_df[[uid_col,'Scheme', 'Team Name', 'Current Outsourcing Team']], use_container_width=True)
     
-    # Select original columns plus prediction columns for download
     download_columns = [
-    uid_col,   'Scheme', 'Team Name','Portfolio', 'Scheme', 'Team Name', 'Current Outsourcing Team', 'Days to Target', 'Scan+2',
+        uid_col, 'Scheme', 'Team Name', 'Portfolio', 'Scheme', 'Team Name', 'Current Outsourcing Team', 'Days to Target', 'Scan+2',
         'Site', 'Manual/RPA', 'Critical', 'Forthcoming Event', 'No of Days', 'Mercer Days',
     ]
     download_df = high_prob_df[download_columns]
 
-   # Create CSV from this clean DataFrame
     csv = download_df.to_csv(index=False).encode()
 
-    # Provide download button
     st.download_button(label="Download Predictions CSV", data=csv, file_name='complaint_predictions.csv', mime='text/csv')
-
-
-
-
-
-
-
-
-
-
-
-    # csv = high_prob_df.to_csv(index=False).encode()
-    # st.download_button(label="Download Predictions CSV", data=csv, file_name='complaint_predictions.csv', mime='text/csv')
