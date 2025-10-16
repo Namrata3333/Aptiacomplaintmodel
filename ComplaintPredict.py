@@ -248,7 +248,7 @@ if uploaded_file is not None:
 
     preds_proba = model.predict_proba(X_user)[:, 1]
 
-    threshold = 0.97
+    threshold = 0.96
     preds_label = (preds_proba > threshold).astype(int)
 
     user_df['Complaint_Probability'] = preds_proba
